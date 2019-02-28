@@ -1,0 +1,94 @@
+# coding: utf-8
+
+# In[1]:
+
+
+from sklearn.model_selection import cross_val_score
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv), data manipulation as in SQL
+import matplotlib.pyplot as plt # this is used for the plot the graph
+import seaborn as sns # used for plot interactive graph. I like it most for plot
+from sklearn.linear_model import LogisticRegression # to apply the Logistic regression
+from sklearn.model_selection import train_test_split # to split the data into two parts
+from sklearn import metrics # for the check the error and accuracy of the model
+from sklearn.tree import DecisionTreeClassifier
+
+
+# In[6]:
+
+
+voice = pd.read_csv("voice.csv")
+voice.head()
+
+
+# In[7]:
+
+
+voice.info()
+
+
+# In[8]:
+
+
+voice.describe()
+
+
+# In[9]:
+
+
+voice["label"]=voice["label"].map({'male':1, 'female':0})
+
+
+# In[10]:
+
+
+voice.describe()
+
+
+# In[11]:
+
+
+sns.countplot(voice['label'],label="Count")
+plt.show()
+
+
+# In[13]:
+
+
+corr = voice.corr() # .corr is used for find corelation
+plt.figure(figsize=(14,14))
+sns.heatmap(corr, cbar = True,  square = True, annot=True,
+            cmap= 'coolwarm')
+plt.show()
+
+
+# In[14]:
+
+
+pred_var=['sd', 'Q25', 'Q75', 'IQR', 'meanfun', 'meandom', 'centroid', 'maxdom']
+
+
+# In[15]:
+
+
+train, test = train_test_split(voice, test_size = 0.2)
+
+
+# In[16]:
+
+
+train_X = train[pred_var]# taking the training data input
+train_y=train.label# This is output of our training data
+# same we have to do for test
+test_X= test[pred_var] # taking test data inputs
+test_y =test.label   #output value of test dat
+
+
+# In[17]:
+
+
+logistic = LogisticRegression()
+logistic.fit(train_X,train_y)
+pred=logistic.predict(test_X)
+print(metrics.accuracy_score(pred,test_y))
+
